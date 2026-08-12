@@ -1,5 +1,8 @@
 package com.taeyn.smalltalk.recommendation;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -12,46 +15,51 @@ import com.taeyn.smalltalk.topic.TopicRepository;
 @ConditionalOnProperty(
     prefix = "app.recommendation",
     name = "strategy",
-    havingValue = "rule",
-    matchIfMissing = true
+    havingValue = "random"
 )
-public class RuleBasedTopicRecommender
+public class RandomTopicRecommender
         implements TopicRecommender {
 
     private final TopicRepository topicRepository;
 
-    public RuleBasedTopicRecommender(
+    public RandomTopicRecommender(
         TopicRepository topicRepository
     ) {
         this.topicRepository = topicRepository;
     }
 
-   @Override
+    @Override
     public RecommendedTopic recommend(
         String situation,
         String category
     ) {
-        Topic topic = topicRepository.findAll()
+        List<Topic> candidates = topicRepository.findAll()
             .stream()
-            .filter(candidate ->
-                candidate.situation().equalsIgnoreCase(situation)
+            .filter(topic ->
+                topic.situation().equalsIgnoreCase(situation)
             )
-            .filter(candidate ->
-                candidate.category().equalsIgnoreCase(category)
+            .filter(topic ->
+                topic.category().equalsIgnoreCase(category)
             )
-            .findFirst()
-            .orElseThrow(() ->
-                new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "조건에 맞는 추천 주제가 없습니다."
-                )
-            );
+            .toList();
 
-        return RecommendedTopic.from(topic);
+        if (candidates.isEmpty()) {
+            throw new ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "조건에 맞는 추천 주제가 없습니다."
+            );
+        }
+
+        int randomIndex = ThreadLocalRandom.current()
+            .nextInt(candidates.size());
+
+        Topic selectedTopic = candidates.get(randomIndex);
+
+        return RecommendedTopic.from(selectedTopic);
     }
 
     @Override
     public String strategyName() {
-        return "RULE_BASED";
+        return "RANDOM";
     }
 }

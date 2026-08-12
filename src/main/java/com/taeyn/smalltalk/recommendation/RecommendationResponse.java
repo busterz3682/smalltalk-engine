@@ -1,7 +1,5 @@
 package com.taeyn.smalltalk.recommendation;
 
-import com.taeyn.smalltalk.topic.Topic;
-
 public record RecommendationResponse(
     Long topicId,
     String content,
@@ -11,11 +9,11 @@ public record RecommendationResponse(
 ) {
 
     public static RecommendationResponse from(
-        Topic topic,
+        RecommendedTopic topic,
         String strategy
     ) {
         return new RecommendationResponse(
-            topic.id(),
+            topic.topicId(),
             topic.content(),
             topic.situation(),
             topic.category(),

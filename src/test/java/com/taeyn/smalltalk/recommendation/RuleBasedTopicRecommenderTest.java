@@ -31,7 +31,7 @@ class RuleBasedTopicRecommenderTest {
         TopicRecommender recommender =
             new RuleBasedTopicRecommender(repository);
 
-        Topic recommended = recommender.recommend(
+        RecommendedTopic recommended = recommender.recommend(
             "FIRST_MEETING",
             "HOBBY"
         );
