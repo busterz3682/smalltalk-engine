@@ -49,19 +49,29 @@ public class OpenAiClient implements AiClient {
                 .input(input)
                 .build();
 
-        Response response =
-            client.responses().create(params);
+        try {
+            Response response = client.responses().create(params);
 
-        return response.output().stream()
-            .flatMap(item -> item.message().stream())
-            .flatMap(message -> message.content().stream())
-            .flatMap(content -> content.outputText().stream())
-            .map(outputText -> outputText.text().trim())
-            .findFirst()
-            .orElseThrow(() ->
-                new IllegalStateException(
-                    "OpenAI 응답에 추천 주제가 없습니다."
-                )
+            return response.output().stream()
+                .flatMap(item -> item.message().stream())
+                .flatMap(message -> message.content().stream())
+                .flatMap(content -> content.outputText().stream())
+                .map(outputText -> outputText.text().trim())
+                .filter(text -> !text.isBlank())
+                .findFirst()
+                .orElseThrow(() ->
+                    new AiServiceException(
+                        "AI가 추천 주제를 생성하지 못했습니다.",
+                        null
+                    )
+                );
+        } catch (AiServiceException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
+            throw new AiServiceException(
+                "AI 추천 서비스를 일시적으로 사용할 수 없습니다.",
+                exception
             );
+        }
     }
 }
