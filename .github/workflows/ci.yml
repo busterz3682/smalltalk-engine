@@ -32,3 +32,6 @@ jobs:
 
       - name: Run tests
         run: ./gradlew clean test
+
+      - name: Build Docker image
+        run: docker build --tag smalltalk-engine:test .

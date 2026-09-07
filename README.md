@@ -108,3 +108,18 @@ app.ai.openai.model=gpt-5.6-luna
 | `POST` | `/api/recommendations` | 스몰토크 질문 추천 |
 
 현재 주제 저장소는 메모리 방식이므로 서버를 종료하면 등록한 주제가 사라집니다. AI 추천 전략은 저장된 주제 없이도 동작합니다.
+
+## Docker 실행
+
+Docker 이미지 생성과 실행은 다음 명령으로 확인할 수 있습니다.
+
+```cmd
+docker build -t smalltalk-engine:local .
+docker run --rm -p 8080:8080 smalltalk-engine:local
+```
+
+실제 OpenAI를 사용할 때는 API 키를 이미지에 포함하지 않고 실행 환경변수로 전달합니다.
+
+```cmd
+docker run --rm -p 8080:8080 -e OPENAI_API_KEY smalltalk-engine:local --app.ai.provider=openai
+```
