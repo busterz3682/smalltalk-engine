@@ -1,5 +1,7 @@
 # Smalltalk Engine
 
+[![CI](https://github.com/busterz3682/smalltalk-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/busterz3682/smalltalk-engine/actions/workflows/ci.yml)
+
 상황과 카테고리를 입력하면 대화를 시작할 수 있는 질문 하나를 추천하는 Spring Boot API입니다.
 
 ## MVP 기능
